@@ -39,8 +39,8 @@ def tex_escape(text):
     return LATEX_RGX.sub(lambda match: LATEX_CONV[match.group()], text)
 
 
-def ltable(data, caption=None, first_row_header=True, first_col_header=False):
-    tsv = tabulate.tabulate(x, tablefmt="tsv")
+def htable(data, caption=None, first_row_header=True, first_col_header=False):
+    tsv = tabulate.tabulate(data, tablefmt="tsv")
     out_lines = [r'\begin{table}[H]', r'\centering']
 
     if caption is not None:
@@ -96,4 +96,4 @@ if __name__ == '__main__':
         ['Merged PDF', -0.020, -0.038, -0.041],
         ['KDE', -0.019, -0.037, -0.040]
     ])
-    print(ltable(x, caption='Foo % bar', first_col_header=True))
+    print(htable(x, caption='Foo % bar', first_col_header=True))
