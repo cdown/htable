@@ -6,7 +6,7 @@ desc = r'Table-like formats to latex \table[H]'
 
 setup(
     name='htable',
-    version='0.1.0',
+    version='0.1.1',
     description=desc,
     long_description=desc,
     url='https://github.com/cdown/htable',
@@ -21,4 +21,6 @@ setup(
         'License :: Public Domain',
         'Programming Language :: Python :: 3',
     ],
+
+    install_requires=['tabulate'],
 )
