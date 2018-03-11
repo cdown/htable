@@ -113,7 +113,6 @@ if __name__ == '__main__':
     y = pandas.DataFrame(numpy.random.randint(low=0, high=10, size=(5, 5)),
                          columns=['a', 'b', 'c', 'd', 'e'])
     print(htable(y, first_col_header=True))
-    import pandas
 
     y = pandas.DataFrame(numpy.random.randint(low=0, high=10, size=(5, 5)))
     print(htable(y, first_col_header=True))
