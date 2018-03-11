@@ -39,7 +39,7 @@ def tex_escape(text):
     return LATEX_RGX.sub(lambda match: LATEX_CONV[match.group()], text)
 
 
-def htable(data, caption=None, first_row_header=True, first_col_header=False):
+def htable(data, caption=None, first_row_header=True, first_col_header=True):
     tsv = tabulate.tabulate(data, tablefmt="tsv")
     out_lines = [r'\begin{table}[H]', r'\centering']
 
