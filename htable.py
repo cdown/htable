@@ -80,15 +80,21 @@ def htable(data, caption=None, first_row_header=True, first_col_header=True, gre
             )
 
         cols_to_grey = []
-        if grey_idx is not None:
+        if grey_idx is not None and \
+           (not first_col_header or row_i != 0):
             try:
-                compare = float(cols[grey_idx])
-                for i, col in enumerate(cols):
-                    if float(col) < compare:
-                        cols_to_grey.append(i)
+                compare_to = float(cols[grey_idx])
             except ValueError:
-                # Ignore non-convertible values
-                pass
+                # Skip this row, grey_idx is unusable
+                continue
+
+            for i, col in enumerate(cols):
+                try:
+                    if float(col) < compare_to:
+                        cols_to_grey.append(i)
+                except ValueError:
+                    # Skip this column, not usable
+                    continue
 
         for col_i, col in enumerate(cols):
             col = tex_escape(col.strip())
