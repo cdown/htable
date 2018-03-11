@@ -81,9 +81,8 @@ def htable(data, caption=None, first_row_header=True, first_col_header=True, gre
 
         cols_to_grey = []
         if grey_idx is not None:
-            compare = float(cols[grey_idx])
-
             try:
+                compare = float(cols[grey_idx])
                 for i, col in enumerate(cols):
                     if float(col) < compare:
                         cols_to_grey.append(i)
