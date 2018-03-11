@@ -39,7 +39,7 @@ def tex_escape(text):
     return LATEX_RGX.sub(lambda match: LATEX_CONV[match.group()], text)
 
 
-def htable(data, caption=None, first_row_header=True, first_col_header=True, grey_idx=None):
+def htable(data, caption=None, first_row_header=True, first_col_header=True, grey_idx=None, numdec=None):
     tsv = tabulate.tabulate(data, tablefmt="tsv")
     out_lines = [r'\begin{table}[H]', r'\centering']
 
@@ -96,8 +96,18 @@ def htable(data, caption=None, first_row_header=True, first_col_header=True, gre
                     # Skip this column, not usable
                     continue
 
+        colfmt = "%.{}f".format(numdec)
+
         for col_i, col in enumerate(cols):
-            col = tex_escape(col.strip())
+            col = col.strip()
+
+            if numdec:
+                try:
+                    col = colfmt % float(col)
+                except ValueError:
+                    pass
+
+            col = tex_escape(col)
 
             if col:
                 if (row_i == 0 and first_row_header) or \
@@ -140,3 +150,6 @@ if __name__ == '__main__':
     y = pandas.DataFrame(numpy.random.randint(low=0, high=10, size=(5, 5)))
     y[2][2] = 'testing'
     print(htable(y, first_col_header=True, grey_idx=2))
+
+    y = pandas.DataFrame(numpy.random.uniform(low=0, high=10, size=(5, 5)))
+    print(htable(y, first_col_header=True, numdec=2))
