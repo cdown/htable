@@ -53,7 +53,18 @@ def htable(data, caption=None, first_row_header=True, first_col_header=False):
     out_lines.append(r'\begin{tabular}{%s}' % tabular_cols)
     out_lines.append(r'\hline')
 
-    for row_i, row in enumerate(tsv.split('\n')):
+    tsv_lines = tsv.split('\n')
+
+    try:
+        import pandas
+    except ImportError:
+        pass
+    else:
+        # Add DF header
+        if isinstance(data, pandas.DataFrame):
+            tsv_lines.insert(0, '\t' + '\t'.join(map(str, data.columns.values)))
+
+    for row_i, row in enumerate(tsv_lines):
         if not row:
             continue
 
@@ -97,3 +108,12 @@ if __name__ == '__main__':
         ['KDE', -0.019, -0.037, -0.040]
     ])
     print(htable(x, caption='Foo % bar', first_col_header=True))
+
+    import pandas
+    y = pandas.DataFrame(numpy.random.randint(low=0, high=10, size=(5, 5)),
+                         columns=['a', 'b', 'c', 'd', 'e'])
+    print(htable(y, first_col_header=True))
+    import pandas
+
+    y = pandas.DataFrame(numpy.random.randint(low=0, high=10, size=(5, 5)))
+    print(htable(y, first_col_header=True))
