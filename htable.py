@@ -138,4 +138,5 @@ if __name__ == '__main__':
     print(htable(y, first_col_header=True))
 
     y = pandas.DataFrame(numpy.random.randint(low=0, high=10, size=(5, 5)))
+    y[2][2] = 'testing'
     print(htable(y, first_col_header=True, grey_idx=2))
