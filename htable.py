@@ -39,7 +39,7 @@ def tex_escape(text):
     return LATEX_RGX.sub(lambda match: LATEX_CONV[match.group()], text)
 
 
-def htable(data, caption=None, first_row_header=True, first_col_header=True):
+def htable(data, caption=None, first_row_header=True, first_col_header=True, grey_idx=None):
     tsv = tabulate.tabulate(data, tablefmt="tsv")
     out_lines = [r'\begin{table}[H]', r'\centering']
 
@@ -79,6 +79,13 @@ def htable(data, caption=None, first_row_header=True, first_col_header=True):
                 )
             )
 
+        cols_to_grey = []
+        if grey_idx is not None:
+            compare = float(cols[grey_idx])
+            for i, col in enumerate(cols):
+                if col and float(col) < compare:
+                    cols_to_grey.append(i)
+
         for col_i, col in enumerate(cols):
             col = tex_escape(col.strip())
 
@@ -87,7 +94,10 @@ def htable(data, caption=None, first_row_header=True, first_col_header=True):
                    (col_i == 0 and first_col_header):
                     cur_line.append(r'\textbf{%s}' % col)
                 else:
-                    cur_line.append(col)
+                    if col_i in cols_to_grey:
+                        cur_line.append(r'\cellcolor{gray!25}%s' % col)
+                    else:
+                        cur_line.append(col)
             else:
                 cur_line.append('~')
 
@@ -116,3 +126,6 @@ if __name__ == '__main__':
 
     y = pandas.DataFrame(numpy.random.randint(low=0, high=10, size=(5, 5)))
     print(htable(y, first_col_header=True))
+
+    y = pandas.DataFrame(numpy.random.randint(low=0, high=10, size=(5, 5)))
+    print(htable(y, first_col_header=True, grey_idx=2))
