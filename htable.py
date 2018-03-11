@@ -82,9 +82,14 @@ def htable(data, caption=None, first_row_header=True, first_col_header=True, gre
         cols_to_grey = []
         if grey_idx is not None:
             compare = float(cols[grey_idx])
-            for i, col in enumerate(cols):
-                if col and float(col) < compare:
-                    cols_to_grey.append(i)
+
+            try:
+                for i, col in enumerate(cols):
+                    if float(col) < compare:
+                        cols_to_grey.append(i)
+            except ValueError:
+                # Ignore non-convertible values
+                pass
 
         for col_i, col in enumerate(cols):
             col = tex_escape(col.strip())
