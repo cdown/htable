@@ -39,7 +39,7 @@ def tex_escape(text):
     return LATEX_RGX.sub(lambda match: LATEX_CONV[match.group()], text)
 
 
-def htable(data, caption=None, first_row_header=True, first_col_header=True, grey_idx=None, grey_style=r'\cellcolor{gray!25}', numdec=None):
+def htable(data, caption=None, first_row_header=True, first_col_header=True, grey_idxs=(), grey_styles=(r'\cellcolor{gray!25}', r'\bfseries{}'), numdec=None):
     tsv = tabulate.tabulate(data, tablefmt="tsv")
     out_lines = [r'\begin{table}[H]', r'\centering']
 
@@ -79,22 +79,23 @@ def htable(data, caption=None, first_row_header=True, first_col_header=True, gre
                 )
             )
 
-        cols_to_grey = []
-        if grey_idx is not None and \
-           (not first_col_header or row_i != 0):
-            try:
-                compare_to = float(cols[grey_idx])
-            except ValueError:
-                # Skip this row, grey_idx is unusable
-                continue
+        cols_to_grey = {}
 
-            for i, col in enumerate(cols):
+        if not first_col_header or row_i != 0:
+            for grey_style_idx, grey_idx in enumerate(grey_idxs):
                 try:
-                    if float(col) < compare_to:
-                        cols_to_grey.append(i)
+                    compare_to = float(cols[grey_idx])
                 except ValueError:
-                    # Skip this column, not usable
+                    # Skip this row, grey_idx is unusable
                     continue
+
+                for i, col in enumerate(cols):
+                    try:
+                        if float(col) < compare_to:
+                            cols_to_grey[i] = grey_style_idx
+                    except ValueError:
+                        # Skip this column, not usable
+                        continue
 
         colfmt = "%.{}f".format(numdec)
 
@@ -115,7 +116,7 @@ def htable(data, caption=None, first_row_header=True, first_col_header=True, gre
                     cur_line.append(r'\textbf{%s}' % col)
                 else:
                     if col_i in cols_to_grey:
-                        cur_line.append(r'%s%s' % (grey_style, col))
+                        cur_line.append(r'%s%s' % (grey_styles[cols_to_grey[col_i]], col))
                     else:
                         cur_line.append(col)
             else:
@@ -149,7 +150,7 @@ if __name__ == '__main__':
 
     y = pandas.DataFrame(numpy.random.randint(low=0, high=10, size=(5, 5)))
     y[2][2] = 'testing'
-    print(htable(y, first_col_header=True, grey_idx=2, grey_style=r'\cellcolor{gray!25}\bfseries{}'))
+    print(htable(y, first_col_header=True, grey_idxs=[2, 4]))
 
     y = pandas.DataFrame(numpy.random.uniform(low=0, high=10, size=(5, 5)))
     y[2][2] = 'testing'
