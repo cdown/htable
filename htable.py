@@ -39,7 +39,7 @@ def tex_escape(text):
     return LATEX_RGX.sub(lambda match: LATEX_CONV[match.group()], text)
 
 
-def htable(data, caption=None, first_row_header=True, first_col_header=True, grey_idx=None, numdec=None):
+def htable(data, caption=None, first_row_header=True, first_col_header=True, grey_idx=None, grey_style=r'\cellcolor{gray!25}', numdec=None):
     tsv = tabulate.tabulate(data, tablefmt="tsv")
     out_lines = [r'\begin{table}[H]', r'\centering']
 
@@ -115,7 +115,7 @@ def htable(data, caption=None, first_row_header=True, first_col_header=True, gre
                     cur_line.append(r'\textbf{%s}' % col)
                 else:
                     if col_i in cols_to_grey:
-                        cur_line.append(r'\cellcolor{gray!25}%s' % col)
+                        cur_line.append(r'%s%s' % (grey_style, col))
                     else:
                         cur_line.append(col)
             else:
@@ -149,7 +149,8 @@ if __name__ == '__main__':
 
     y = pandas.DataFrame(numpy.random.randint(low=0, high=10, size=(5, 5)))
     y[2][2] = 'testing'
-    print(htable(y, first_col_header=True, grey_idx=2))
+    print(htable(y, first_col_header=True, grey_idx=2, grey_style=r'\cellcolor{gray!25}\bfseries{}'))
 
     y = pandas.DataFrame(numpy.random.uniform(low=0, high=10, size=(5, 5)))
+    y[2][2] = 'testing'
     print(htable(y, first_col_header=True, numdec=2))
