@@ -13,6 +13,7 @@ Usage: See if __name__ == '__main__'.
 import re
 import numpy
 import tabulate
+import collections
 
 
 LATEX_CONV = {
@@ -79,7 +80,7 @@ def htable(data, caption=None, first_row_header=True, first_col_header=True, gre
                 )
             )
 
-        cols_to_grey = {}
+        cols_to_grey = collections.defaultdict(list)
 
         if not first_col_header or row_i != 0:
             for grey_style_idx, grey_idx in enumerate(grey_idxs):
@@ -92,7 +93,7 @@ def htable(data, caption=None, first_row_header=True, first_col_header=True, gre
                 for i, col in enumerate(cols):
                     try:
                         if float(col) < compare_to:
-                            cols_to_grey[i] = grey_style_idx
+                            cols_to_grey[i].append(grey_style_idx)
                     except ValueError:
                         # Skip this column, not usable
                         continue
@@ -116,7 +117,10 @@ def htable(data, caption=None, first_row_header=True, first_col_header=True, gre
                     cur_line.append(r'\textbf{%s}' % col)
                 else:
                     if col_i in cols_to_grey:
-                        cur_line.append(r'%s%s' % (grey_styles[cols_to_grey[col_i]], col))
+                        styles = ''
+                        for style_idx in cols_to_grey[col_i]:
+                            styles += grey_styles[style_idx]
+                        cur_line.append(r'%s%s' % (styles, col))
                     else:
                         cur_line.append(col)
             else:
